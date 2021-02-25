@@ -153,15 +153,6 @@ export const state = () => ({
       PHONE: "+7 (812) 445-62-09"
     },
     {
-      ID: "471526",
-      NAME: "Скорая помощь",
-      WORK: "КРУГЛОСУТОЧНО",
-      ANALIZ: "",
-      ADDRESS: "",
-      COORD: "",
-      PHONE: "+7(812)600-77-70"
-    },
-    {
       METRO: [{ NAME: "Парнас", CODE: "blue" }],
       ID: "8108129",
       NAME: "Отделение &quot;Парнас&quot;",

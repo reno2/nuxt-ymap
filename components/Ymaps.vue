@@ -45,20 +45,19 @@ export default {
     filter(newVal) {
       let filter = new ymaps.GeoQueryResult();
 
-      if (newVal.length == 16) {
-        myObjects.addToMap(this.myMap);
-      } else {
-        newVal.forEach((ele, i) => {
-          filter = myObjects.search(`options.id = ${ele}`).add(filter);
-        });
+      newVal.forEach((ele, i) => {
+        filter = myObjects.search(`options.id = ${ele}`).add(filter);
+      });
 
-        this.myMap.geoObjects.removeAll();
-        const shownObjects = filter
-          .addToMap(this.myMap)
-          .applyBoundsToMap(this.myMap, {
-            checkZoomRange: true
-          });
-      }
+      this.myMap.geoObjects.removeAll();
+      const shownObjects = filter
+        .addToMap(this.myMap)
+        .applyBoundsToMap(this.myMap);
+
+      shownObjects.then(() => {
+        if (shownObjects.getLength() == 1) this.myMap.setZoom(13);
+      });
+      // }
     }
   },
   methods: {

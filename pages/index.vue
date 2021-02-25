@@ -80,7 +80,7 @@ export default {
   computed: {
     ...mapGetters("maps", ["getOffices"]),
     ...mapState({
-      offices: state => state.maps.offices
+      offices: state => state.maps.offices2
     }),
     mapFilter() {
       return this.filteredOffices.map(el => el.ID);
