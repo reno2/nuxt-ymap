@@ -29,35 +29,36 @@ export default {
     zoom: {
       type: Number,
       default: 13
+    },
+    activeFilter: {
+      type: Array
+    },
+    filter: {
+      type: Array
     }
   },
   data: () => ({
     initialize: false,
     img: require("~/assets/pin.png")
   }),
-  computed: {
-    filterItems: function() {
-      // if (!this.items) return;
-      console.log(this.items);
-      const toMap = this.items.map(item => {
-        return {
-          type: "Feature",
-          geometry: {
-            type: "Point",
-            coordinates: item.COORD.split(","),
-            id: item.ID
-          },
-          options: {
-            name: item.NAME,
-            apteca: this.checkBy("NAME", "Аптека", item.DOP),
-            iconLayout: "default#image",
-            iconImageHref: this.img,
-            iconImageSize: [49, 52],
-            iconImageOffset: [-20, -45]
-          }
-        };
-      });
-      return toMap;
+  watch: {
+    filter(newVal) {
+      let filter = new ymaps.GeoQueryResult();
+
+      if (newVal.length == 16) {
+        myObjects.addToMap(this.myMap);
+      } else {
+        newVal.forEach((ele, i) => {
+          filter = myObjects.search(`options.id = ${ele}`).add(filter);
+        });
+
+        this.myMap.geoObjects.removeAll();
+        const shownObjects = filter
+          .addToMap(this.myMap)
+          .applyBoundsToMap(this.myMap, {
+            checkZoomRange: true
+          });
+      }
     }
   },
   methods: {
@@ -71,7 +72,7 @@ export default {
           checkZoomRange: true
         });
       } catch (err) {
-        alert(err.message); // TypeError: failed to fetch
+        alert(err.message);
       }
     },
     checkBy(field, value, data) {
@@ -84,7 +85,6 @@ export default {
 
     prepearPoints() {
       const toMap = this.items.map(item => {
-        // console.log(item);
         return {
           type: "Feature",
           geometry: {
@@ -93,6 +93,7 @@ export default {
             id: item.ID
           },
           options: {
+            id: item.ID,
             name: item.NAME,
             apteca: this.checkBy("NAME", "Аптека", item.DOP),
             iconLayout: "default#image",

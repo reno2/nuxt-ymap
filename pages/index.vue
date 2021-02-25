@@ -56,6 +56,7 @@
         :items="filteredOffices"
         :btnNearest="true"
         :coords="coords"
+        :filter="mapFilter"
       ></Ymaps>
     </div>
   </div>
@@ -77,16 +78,17 @@ export default {
     }
   },
   computed: {
-    ...mapGetters("maps", ["getTotalCount"]),
+    ...mapGetters("maps", ["getOffices"]),
     ...mapState({
       offices: state => state.maps.offices
     }),
+    mapFilter() {
+      return this.filteredOffices.map(el => el.ID);
+    },
     filteredOffices() {
       let offices = this.offices;
-
       if (this.selectedTag.length) {
         this.selectedAll = false;
-
         offices = offices
           .filter(ta => {
             if (!!ta.DOP) return ta;
@@ -99,15 +101,24 @@ export default {
       } else {
         this.selectedAll = true;
       }
-
       return offices;
     },
     renderTags() {
-      return Object.values(
-        this.offices
-          .flatMap(n => n.DOP)
-          .reduce((acc, n) => (n && (acc[n.NAME] = n), acc), {})
-      );
+      let g = [];
+      this.offices.filter(first => {
+        if (first.DOP) {
+          first.DOP.map(el => g.push(el));
+        }
+      });
+      return g.filter((obj, pos, arr) => {
+        return arr.map(mapObj => mapObj["CODE"]).indexOf(obj["CODE"]) === pos;
+      });
+
+      //   return Object.values(
+      //     this.offices
+      //       .flatMap(n => n.DOP)
+      //       .reduce((acc, n) => (n && (acc[n.NAME] = n), acc), {})
+      //   );
     }
   },
   methods: {
@@ -123,7 +134,9 @@ export default {
   components: {
     Ymaps
   },
-  mounted() {}
+  async mounted() {
+    // this.offices =
+  }
 };
 </script>
 
