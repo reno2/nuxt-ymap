@@ -2,21 +2,35 @@
 
 > Компонент яндекс карт и фильтрацией адресов
 
-## Build Setup
+# Провтой компонент по выводу яндекс карт
 
-```bash
-# install dependencies
-$ npm install
+### Объекты
 
-# serve with hot reload at localhost:3000
-$ npm run dev
+- массив объектов передаётся в параметре `items`
+- структура `[{COORDS:"60.00637346968,30.254479974204", ID: 1},{COORDS:"59.935620751817,30.346451736771", ID:3, ICON: "custom.png"}]`
 
-# build for production and launch server
-$ npm run build
-$ npm run start
+### Фильтрация
 
-# generate static project
-$ npm run generate
-```
+- Фильтрация происходит на стороне вызова компонента в `computed` которое передаётся в компонент через `filter`
 
-For detailed explanation on how things work, check out [Nuxt.js docs](https://nuxtjs.org).
+### Элементы управления
+
+- передаются через `controles`
+-
+
+### Поиск ближайшего объекта
+
+`btnNearest` параметр имеет `Boolean` значение если `true` то выводит кнопку
+
+### Стили
+
+- Высота и ширина карты
+- `styles` передаются типом `Srting` вида `width: 100%; height: 200px;`
+
+### Зум
+
+- `zoom` значение по умолчанию равно 10
+
+### Своя иконка
+
+- необходимо расположить в ключе объекта с именем `ICON` путь до иконки проверяется в `~/assets/`

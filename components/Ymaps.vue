@@ -1,6 +1,6 @@
 <template>
   <div class="ymap">
-    <div class="ymap_map" id="map" style="width:550px;height:500px"></div>
+    <div class="ymap_map" :id="id" :style="styles"></div>
     <a
       v-if="btnNearest"
       @click.prevent="findClosest"
@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import { ymapLoader, getBrowserLocation } from "~/helpers/ymaps";
+import { ymapLoader, getBrowserLocation, emitter } from "~/helpers/ymaps";
 export default {
   props: {
     coords: {
@@ -28,19 +28,29 @@ export default {
     },
     zoom: {
       type: Number,
-      default: 13
-    },
-    activeFilter: {
-      type: Array
+      default: 10
     },
     filter: {
       type: Array
+    },
+    styles: {
+      type: String,
+      default: "width: 500px; height: 500px;"
+    },
+    controls: {
+      type: Array,
+      default() {
+        return [];
+      }
     }
   },
   data: () => ({
-    initialize: false,
-    img: require("~/assets/pin.png")
+    // initialize: false,
+    icon: require("~/assets/pin.png"),
+    id: `ymap_id_${Math.round(Math.random() * 100000)}`,
+    onFindZoom: 10
   }),
+
   watch: {
     filter(newVal) {
       let filter = new ymaps.GeoQueryResult();
@@ -55,31 +65,33 @@ export default {
         .applyBoundsToMap(this.myMap);
 
       shownObjects.then(() => {
-        if (shownObjects.getLength() == 1) this.myMap.setZoom(13);
+        if (shownObjects.getLength() == 1) this.myMap.setZoom(this.zoom);
       });
-      // }
     }
   },
   methods: {
     async findClosest() {
       try {
-        const coords = await getBrowserLocation(),
-          storage = ymaps.geoQuery(this.myMap.geoObjects),
-          closestOdj = storage.getClosestTo(coords),
-          newCoords = closestOdj.geometry.getCoordinates();
-        this.myMap.setCenter(newCoords, this.zoom, {
+        const coords = await getBrowserLocation();
+        const storage = ymaps.geoQuery(this.myMap.geoObjects);
+        const closestOdj = storage.getClosestTo(coords);
+        const newCoords = closestOdj.geometry.getCoordinates();
+
+        this.myMap.setCenter(newCoords, this.onFindZoom, {
           checkZoomRange: true
         });
       } catch (err) {
         alert(err.message);
       }
     },
-    checkBy(field, value, data) {
-      if (!data) return false;
-      const res = data.filter(el => {
-        return el && el[field] === value;
-      });
-      return !!res.length;
+    getImgUrl(pic) {
+      let context = require.context("~/assets/", false, /^(?!.*\.(?:md)$).*/);
+      return context("./" + pic);
+    },
+    getIcon(item) {
+      if (item.ICON && this.getImgUrl(item.ICON))
+        return this.getImgUrl(item.ICON);
+      else return this.icon;
     },
 
     prepearPoints() {
@@ -94,9 +106,8 @@ export default {
           options: {
             id: item.ID,
             name: item.NAME,
-            apteca: this.checkBy("NAME", "Аптека", item.DOP),
             iconLayout: "default#image",
-            iconImageHref: this.img,
+            iconImageHref: this.getIcon(item),
             iconImageSize: [49, 52],
             iconImageOffset: [-20, -45]
           }
@@ -105,12 +116,11 @@ export default {
       return toMap;
     },
     init() {
-      const myMap = new ymaps.Map("map", {
+      const myMap = new ymaps.Map(this.id, {
         center: this.coords,
-        zoom: 10,
-        controls: []
+        zoom: this.zoom,
+        controls: this.controls
       });
-
       const points = this.prepearPoints();
       if (points) {
         window.myObjects = ymaps
@@ -120,13 +130,22 @@ export default {
           })
           .addToMap(myMap);
         this.myMap = myMap;
-        this.initialize = true;
+        //this.initialize = true;
+        //this.myMap.setBounds(myObjects.getBounds());
       }
     }
   },
-  async mounted() {
-    await ymapLoader({ debug: true });
-    window.ymaps.ready(this.init);
+  mounted() {
+    if (emitter.scriptIsNotAttached) {
+      ymapLoader();
+    }
+    if (emitter.ymapReady) {
+      ymaps.ready(this.init);
+    } else {
+      emitter.$on("scriptIsLoaded", () => {
+        ymaps.ready(this.init);
+      });
+    }
   }
 };
 </script>

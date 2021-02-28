@@ -1,6 +1,16 @@
 <template>
   <div class="container">
     <div class="items">
+      <div class="ymap_to">
+        <h4>Комонент с одной точкой</h4>
+        <Ymaps
+          :coords="onepoint"
+          :items="onepoint2"
+          :controls="controls"
+          styles="width: 100%; height: 200px;"
+        ></Ymaps>
+      </div>
+
       <transition-group name="company" mode="out-in" tag="div" class="items">
         <div
           class="items_item"
@@ -21,6 +31,7 @@
       </transition-group>
     </div>
     <div class="map">
+      <h4>Компонент с фильтрацией</h4>
       <div class="map__filter">
         <div class="offices_tags" v-if="renderTags">
           <div class="offices_tagsUl">
@@ -68,9 +79,12 @@ import Ymaps from "~/components/Ymaps.vue";
 
 export default {
   data: () => ({
+    onepoint: [60.101834491306, 29.969331737434],
+    onepoint2: [{ COORD: "60.101834491306, 29.969331737434" }],
     coords: [59.967515, 30.274616],
     selectedAll: true,
-    selectedTag: []
+    selectedTag: [],
+    controls: ["zoomControl"]
   }),
   async asyncData({ store }) {
     if (store.getters["maps/getOffices"].length === 0) {
@@ -141,6 +155,10 @@ export default {
 </script>
 
 <style>
+.ymap_to {
+  width: 570px;
+  margin-top: 16px;
+}
 .map {
   /* min-width: 100%; */
   background: #eee;
