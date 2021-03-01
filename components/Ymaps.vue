@@ -4,7 +4,7 @@
     <a
       v-if="btnNearest"
       @click.prevent="findClosest"
-      class="ymap_nearest btn green ymap_btn"
+      class="ymap_nearest btn green"
     >
       Показать ближайшую
     </a>
@@ -45,10 +45,9 @@ export default {
     }
   },
   data: () => ({
-    // initialize: false,
-    icon: require("~/assets/pin.png"),
+    icon: require("~/assets/marker.png"),
     id: `ymap_id_${Math.round(Math.random() * 100000)}`,
-    onFindZoom: 10
+    onFindZoom: 13
   }),
 
   watch: {
@@ -130,8 +129,6 @@ export default {
           })
           .addToMap(myMap);
         this.myMap = myMap;
-        //this.initialize = true;
-        //this.myMap.setBounds(myObjects.getBounds());
       }
     }
   },
@@ -150,14 +147,14 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 .ymap {
   position: relative;
 }
 .ymap_nearest {
   position: absolute;
-  bottom: 60px;
-  left: 16px;
+  bottom: 32px;
+  right: 8px;
 }
 .ymap_btn {
   background: #eae419;

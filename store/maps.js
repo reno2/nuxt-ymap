@@ -26,7 +26,7 @@ export const state = () => ({
         { NAME: "Травматология", CODE: "icon-travma" },
         { NAME: "Стационар", CODE: "icon-stazionar" }
       ],
-      ICON: "pin-farma.png",
+      ICON: "pharmacy.png",
       ID: "4",
       NAME: "Отделение &quot;Центральное&quot;",
       WORK: "пн-вс: c 9:00 до 21:00\r\nтравмпункт: круглосуточно\r\n\r\n",
@@ -83,7 +83,7 @@ export const state = () => ({
         { NAME: "Аптека", CODE: "icon-apteka" },
         { NAME: "Травматология", CODE: "icon-travma" }
       ],
-      ICON: "pin-farma.png",
+      ICON: "pharmacy.png",
       ID: "42",
       NAME: "Отделение &quot;Московское&quot;",
       WORK: "пн-вс: с 09:00 до 21:00\r\n\r\n",
@@ -98,7 +98,7 @@ export const state = () => ({
         { NAME: "Аптека", CODE: "icon-apteka" },
         { NAME: "Травматология", CODE: "icon-travma" }
       ],
-      ICON: "pin-farma.png",
+      ICON: "pharmacy.png",
       ID: "43",
       NAME: "Отделение &quot;Озерки&quot;",
       WORK:
@@ -124,7 +124,7 @@ export const state = () => ({
       PHONE: "+7 (812) 600-78-26"
     },
     {
-      ICON: "pin-farma.png",
+      ICON: "pharmacy.png",
       METRO: [{ NAME: "Приморская", CODE: "green" }],
       ID: "45",
       NAME: "Отделение &quot;Василеостровское&quot;",
