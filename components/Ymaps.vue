@@ -182,10 +182,14 @@ export default {
     }
   },
   mounted() {
-    this.observer = new IntersectionObserver(this.handleIntersection, {
-      rootMargin: this.rootMargin
-    });
-    this.observer.observe(this.$refs.map);
+    if ("IntersectionObserver" in window) {
+      this.observer = new IntersectionObserver(this.handleIntersection, {
+        rootMargin: this.rootMargin
+      });
+      this.observer.observe(this.$refs.map);
+    } else {
+      this.startLoad();
+    }
   },
   destroyed() {
     this.observer.disconnect();
