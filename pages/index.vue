@@ -1,16 +1,6 @@
 <template>
   <div class="container">
     <div class="items">
-      <div class="ymap_to">
-        <h4>Комонент с одной точкой</h4>
-        <Ymaps
-          :coords="onepoint"
-          :items="onepoint2"
-          :controls="controls"
-          styles="width: 100%; height: 200px;"
-        ></Ymaps>
-      </div>
-
       <transition-group name="company" mode="out-in" tag="div" class="items">
         <div
           class="items_item"
@@ -29,9 +19,55 @@
           </div>
         </div>
       </transition-group>
+      <div class="ymap_to">
+        <div>
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Magnam
+          delectus harum error ullam nihil ipsam eveniet deserunt ratione.
+          Consequatur cum, sequi suscipit pariatur ipsum accusantium? Ipsa eius
+          eos cum iusto.
+        </div>
+        <div>
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Magnam
+          delectus harum error ullam nihil ipsam eveniet deserunt ratione.
+          Consequatur cum, sequi suscipit pariatur ipsum accusantium? Ipsa eius
+          eos cum iusto.
+        </div>
+        <div>
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Magnam
+          delectus harum error ullam nihil ipsam eveniet deserunt ratione.
+          Consequatur cum, sequi suscipit pariatur ipsum accusantium? Ipsa eius
+          eos cum iusto.
+        </div>
+        <div>
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Magnam
+          delectus harum error ullam nihil ipsam eveniet deserunt ratione.
+          Consequatur cum, sequi suscipit pariatur ipsum accusantium? Ipsa eius
+          eos cum iusto.
+        </div>
+        <div>
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Magnam
+          delectus harum error ullam nihil ipsam eveniet deserunt ratione.
+          Consequatur cum, sequi suscipit pariatur ipsum accusantium? Ipsa eius
+          eos cum iusto.
+        </div>
+        <div>
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Magnam
+          delectus harum error ullam nihil ipsam eveniet deserunt ratione.
+          Consequatur cum, sequi suscipit pariatur ipsum accusantium? Ipsa eius
+          eos cum iusto.
+        </div>
+        <h4>Комонент с одной точкой</h4>
+        <Ymaps
+          rootMargin="0px 0px 0px 0px"
+          :center="onepoint"
+          :items="onepoint2"
+          :controls="controls"
+          styles="width: 100%; height: 200px;"
+        ></Ymaps>
+      </div>
     </div>
     <div class="map">
-      <h4>Компонент с фильтрацией</h4>
+      <!-- <h4>Компонент с фильтрацией</h4> -->
       <div class="map__filter">
         <div class="offices_tags" v-if="renderTags">
           <div class="offices_tagsUl">
@@ -66,7 +102,7 @@
       <Ymaps
         :items="filteredOffices"
         :btnNearest="true"
-        :coords="coords"
+        :center="coords"
         :filter="mapFilter"
       ></Ymaps>
     </div>
@@ -86,11 +122,11 @@ export default {
     selectedTag: [],
     controls: ["zoomControl"]
   }),
-  async asyncData({ store }) {
-    if (store.getters["maps/getOffices"].length === 0) {
-      await store.dispatch("maps/fetch");
-    }
-  },
+  //   async asyncData({ store }) {
+  //     if (store.getters["maps/getOffices"].length === 0) {
+  //       await store.dispatch("maps/fetch");
+  //     }
+  //   },
   computed: {
     ...mapGetters("maps", ["getOffices"]),
     ...mapState({
@@ -128,11 +164,11 @@ export default {
         return arr.map(mapObj => mapObj["CODE"]).indexOf(obj["CODE"]) === pos;
       });
 
-      //   return Object.values(
-      //     this.offices
-      //       .flatMap(n => n.DOP)
-      //       .reduce((acc, n) => (n && (acc[n.NAME] = n), acc), {})
-      //   );
+      return Object.values(
+        this.offices
+          .flatMap(n => n.DOP)
+          .reduce((acc, n) => (n && (acc[n.NAME] = n), acc), {})
+      );
     }
   },
   methods: {
@@ -189,8 +225,8 @@ export default {
   padding: 10px;
   border-radius: 6px;
 }
-.items_itemLine {
-}
+/* .items_itemLine {
+} */
 .items_itemName {
   font-size: 12px;
 }

@@ -1,6 +1,34 @@
+class EventEmitter {
+  constructor() {
+    this.events = {};
+    this.IntersectionObserver = false;
+    this.ymapReady = false;
+    this.scriptIsNotAttached = true;
+  }
+  $on(eventName, fn) {
+    if (!this.events[eventName]) {
+      this.events[eventName] = [];
+    }
+    this.events[eventName].push(fn);
+    return () => {
+      this.events[eventName] = this.events[eventName].filter(
+        eventFn => fn !== eventFn
+      );
+    };
+  }
+  $emit(eventName, data) {
+    const event = this.events[eventName];
+    if (event) {
+      event.forEach(fn => fn(data));
+    }
+  }
+}
+
+export const emitter = new EventEmitter();
+
 // Получение координат пользователя
 export const getBrowserLocation = () => {
-  return new Promise(async (resolve, reject) => {
+  return new Promise((resolve, reject) => {
     if (!("geolocation" in navigator)) {
       reject(new Error("Геолокация не доступна."));
     }
@@ -21,37 +49,6 @@ export const getBrowserLocation = () => {
     }
   });
 };
-
-class EventEmitter {
-  constructor() {
-    this.events = {};
-    this.ymapReady = false;
-    this.scriptIsNotAttached = true;
-  }
-
-  $on(eventName, fn) {
-    if (!this.events[eventName]) {
-      this.events[eventName] = [];
-    }
-
-    this.events[eventName].push(fn);
-
-    return () => {
-      this.events[eventName] = this.events[eventName].filter(
-        eventFn => fn !== eventFn
-      );
-    };
-  }
-
-  $emit(eventName, data) {
-    const event = this.events[eventName];
-    if (event) {
-      event.forEach(fn => fn(data));
-    }
-  }
-}
-
-export const emitter = new EventEmitter();
 
 // Подключение api карт
 export function ymapLoader(settings = {}) {

@@ -3,6 +3,9 @@ export default {
   /*
    ** Headers of the page
    */
+  server: {
+    port: 8000 // default: 3000
+  },
   head: {
     title: process.env.npm_package_name || "",
     meta: [
