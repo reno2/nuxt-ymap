@@ -13,50 +13,63 @@
 </template>
 
 <script>
+/**
+
+     * Компонент, выодит яндекм карту с геообъектами, даёт возможность фильтрации объектов, поиск ближайшего геообъекта.
+
+     * Поддержка отложенной загрузки карты
+     *
+     * @module /component/VMap
+     * @vue-prop {Array} Center - центр карты, объязательный параметр
+     * @vue-prop {Boolean} [btnNearest=false] BtnNearest - вывод кнопки найти ближайший адрес
+     * @vue-prop {Array} [items=null] Items - массив с геообъектами, в каждом объекте должен быть ключ с координатами
+     * @vue-prop {Number} [zoom=10] Zoom - зум карты
+     * @vue-prop {Array} [filter=null] Filter - массив состоящий из id геообъектов для фильтрации
+     * @vue-prop {String} [styles='width: 500px; height: 500px;']
+
+     * @vue-prop {Array} [controls=[]] Controls - массив из элементов управления картой
+     * @vue-prop {String} [rootMargin='0px 0px 0px 0px'] RootMargin - свойство объекта intersectionObserver принимает значения пересечения элемента с view port
+     *
+     * @vue-data icon - Маркер по умолчанию для геообъектов
+     * @vue-data onFindZoom - Зум для результата поиска ближайшего объекта
+     * @vue-data observer - Intersection Observer
+     *
+     * @vue-event {Boolean} scriptIsNotAttached - Результат события скрипта апи
+     * @vue-event {Boolean} scriptIsLoaded - Событие ymaps.ready
+     */
 import { ymapLoader, getBrowserLocation, emitter } from "~/helpers/ymaps";
 export default {
   props: {
-    // центр карты
     center: {
       type: Array,
       required: true
     },
-    // Вывод кнопки икать ближайший адрес
     btnNearest: {
       type: Boolean,
       default: false
     },
-    // Объекты с одресами, в нутри каждого объекта
-    // дожен находится массив с координатами
     items: {
       type: Array,
       default: null
     },
-    // Зум
     zoom: {
       type: Number,
       default: 10
     },
-    // Объекты с Id гео объектов на карте для фильтрации,
-    // необъязатеьный параметр
     filter: {
       type: Array,
       default: null
     },
-    // Стили для элемента карты
     styles: {
       type: String,
       default: "width: 500px; height: 500px;"
     },
-    // Элементы управления
     controls: {
       type: Array,
       default() {
         return [];
       }
     },
-    // Принимает условия для начала загрузки элемента
-    // относительно вьюпорта
     rootMargin: {
       type: String,
       default: "0px 0px 0px 0px"
@@ -69,6 +82,16 @@ export default {
   }),
 
   watch: {
+    /**
+     * Принимае массив с id элементов и фильтрует геообъекты по этои id и центрыет
+     * В случаи если в результате остаётся один элемент изменяем zoom
+     *
+     * @function filter
+     *
+     * @param {Array} newVal - Массив
+     * @return {void}
+     *
+     * */
     filter(newVal) {
       let filter = new ymaps.GeoQueryResult();
 
@@ -87,6 +110,15 @@ export default {
     }
   },
   methods: {
+    /**
+     * Находит ближайший геообъект по координатам
+     *
+     * @async
+     * @function
+     * @name findClosest
+     * @return {Promise<Array>} Устанавливает центр карты на координатах
+     * полученнных из местоположения пользователя
+     */
     async findClosest() {
       try {
         const coords = await getBrowserLocation();
@@ -110,8 +142,12 @@ export default {
         return this.getImgUrl(item.ICON);
       } else return this.icon;
     },
-
-    prepearPoints() {
+    /**
+     * Формирует массив объектов для добавления на карту
+     * @function preparePoints
+     * @return {Array}
+     * */
+    preparePoints() {
       return this.items.map(item => {
         return {
           type: "Feature",
@@ -131,13 +167,19 @@ export default {
         };
       });
     },
+    /**
+     * Инициализирует карту и выводит геообъекты
+     * Если объект один то меняет зум
+     * @function init
+     * @return {Array}
+     * */
     init() {
       const myMap = new ymaps.Map(this.$refs.map, {
         center: this.center,
         zoom: this.zoom,
         controls: this.controls
       });
-      const points = this.prepearPoints();
+      const points = this.preparePoints();
       if (points) {
         window.myObjects = ymaps
           .geoQuery({
@@ -154,6 +196,13 @@ export default {
         });
       }
     },
+    /**
+     *  Проверяет подключение api карт
+     *  Вызывает метод инициализации карты
+     *  Для определения события подключения api использует патерн emitter
+     *
+     * @function startLoad
+     * */
     startLoad() {
       console.info("yes");
       // Проверяем что апи подключенно
@@ -172,6 +221,11 @@ export default {
         });
       }
     },
+    /**
+     *
+     *  Callback функция объекта IntersectionObserver
+     * @callback this.observer~handleIntersection
+     * */
     handleIntersection(entries, observer) {
       for (let entry of entries) {
         if (entry.isIntersecting) {
@@ -181,6 +235,10 @@ export default {
       }
     }
   },
+  /**
+   *  Проверяет и инийиализирует оъект IntersectionObserver с параметрами
+   * @function mounted
+   * */
   mounted() {
     if ("IntersectionObserver" in window) {
       this.observer = new IntersectionObserver(this.handleIntersection, {

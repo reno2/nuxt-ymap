@@ -1,32 +1,11 @@
-class EventEmitter {
-  constructor() {
-    this.events = {};
-    this.IntersectionObserver = false;
-    this.ymapReady = false;
-    this.scriptIsNotAttached = true;
-  }
-  $on(eventName, fn) {
-    if (!this.events[eventName]) {
-      this.events[eventName] = [];
-    }
-    this.events[eventName].push(fn);
-    return () => {
-      this.events[eventName] = this.events[eventName].filter(
-        eventFn => fn !== eventFn
-      );
-    };
-  }
-  $emit(eventName, data) {
-    const event = this.events[eventName];
-    if (event) {
-      event.forEach(fn => fn(data));
-    }
-  }
-}
+/**
+ * Получение координат пользователя
+ * @module /helpers/ymaps.js
+ * @return {Promise<Array>} с координатами пользователя
+ *
+ */
 
-export const emitter = new EventEmitter();
-
-// Получение координат пользователя
+/** getBrowserLocation */
 export const getBrowserLocation = () => {
   return new Promise((resolve, reject) => {
     if (!("geolocation" in navigator)) {
@@ -49,8 +28,64 @@ export const getBrowserLocation = () => {
     }
   });
 };
+/** Класс Event Emitter создаёт основу для управления событиями и
+ * и возможность любым элементам «подписаться» на него
+ */
+class EventEmitter {
+  /**
+   * Создание EventEmitter
+   * @param {object} events - Объект с осбытиями.
+   * @param {boolean} ymapReady - Соостояне подключения яндекс апи.
+   * @param {boolean} scriptIsNotAttached - Состояние загрузки скрипта яндекс апи
+   */
+  constructor() {
+    this.events = {};
+    this.ymapReady = false;
+    this.scriptIsNotAttached = true;
+  }
+  /**
+   * Подписывает на событие и возвращает для последующей отписки
+   * @param {string} eventName имя события для подписки
+   * @param {function} fn фнкуция события
+   * @return {object} Отфильтрованный по переданному событию
+   */
+  $on(eventName, fn) {
+    if (!this.events[eventName]) {
+      this.events[eventName] = [];
+    }
 
-// Подключение api карт
+    this.events[eventName].push(fn);
+
+    return () => {
+      this.events[eventName] = this.events[eventName].filter(
+        eventFn => fn !== eventFn
+      );
+    };
+  }
+  /**
+   * Выполняет событие
+   * @param {string} eventName имя события для выполнения
+   * @param {function} data фнкуция события
+   * @return {void}
+   */
+  $emit(eventName, data) {
+    const event = this.events[eventName];
+    if (event) {
+      event.forEach(fn => fn(data));
+    }
+  }
+}
+
+export const emitter = new EventEmitter();
+
+/**
+ * Подключение api карт
+ * @module /helpers/ymaps.js
+ * @return {Promise<Array>} подключает api яндекс карт
+ *
+ */
+
+/** getBrowserLocation */
 export function ymapLoader(settings = {}) {
   return new Promise((res, rej) => {
     if (window.ymaps) {
