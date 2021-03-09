@@ -78,7 +78,8 @@ export default {
   data: () => ({
     icon: require("~/assets/marker.png"),
     onFindZoom: 13,
-    observer: null
+    observer: null,
+    myObjects: []
   }),
 
   watch: {
@@ -96,7 +97,7 @@ export default {
       let filter = new ymaps.GeoQueryResult();
 
       newVal.forEach((ele, i) => {
-        filter = myObjects.search(`options.id = ${ele}`).add(filter);
+        filter = this.myObjects.search(`options.id = ${ele}`).add(filter);
       });
 
       this.myMap.geoObjects.removeAll();
@@ -125,7 +126,6 @@ export default {
         const storage = ymaps.geoQuery(this.myMap.geoObjects);
         const closestOdj = storage.getClosestTo(coords);
         const newCoords = closestOdj.geometry.getCoordinates();
-
         this.myMap.setCenter(newCoords, this.onFindZoom, {
           checkZoomRange: true
         });
@@ -181,7 +181,7 @@ export default {
       });
       const points = this.preparePoints();
       if (points) {
-        window.myObjects = ymaps
+        this.myObjects = ymaps
           .geoQuery({
             type: "FeatureCollection",
             features: points
@@ -189,7 +189,7 @@ export default {
           .addToMap(myMap);
         this.myMap = myMap;
       }
-      if (myObjects.getLength() == 1) {
+      if (this.myObjects.getLength() == 1) {
         const oneObjCoords = myObjects.get(0).geometry.getCoordinates();
         myMap.setCenter(oneObjCoords, 10, {
           checkZoomRange: true
